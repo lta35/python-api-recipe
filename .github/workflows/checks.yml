@@ -8,14 +8,18 @@ jobs:
     name: Test and Lint
     runs-on: ubuntu-24.04
     steps:
+      - name: Check secrets
+        run: |
+          [ -n "${{ secrets.DOCKERHUB_USER }}" ] && echo "USER ok" || echo "USER vide"
+          [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ] && echo "TOKEN ok" || echo "TOKEN vide"
       - name: Login to Docker HUb
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Test
-        run: docker compose run -rm app sh -c "python manage.py test"
+        run: docker compose run --rm app sh -c "python manage.py test"
       - name: Lint
-        run: docker compose run -rm app sh -c "flake8"
+        run: docker compose run --rm app sh -c "flake8"
